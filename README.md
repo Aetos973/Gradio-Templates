@@ -102,7 +102,7 @@ Drop a comment in the discussion tab or reach out on [LinkedIn](https://linkedin
 
 ## 🛠 Credits
 
-Crafted with 💡 by \Aetos973
+Crafted with 💡 by \[Aetos973]
 Inspired by the Gradio team and countless builders in the AI space.
 
 ---
