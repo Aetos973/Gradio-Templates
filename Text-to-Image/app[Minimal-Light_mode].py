@@ -1,50 +1,83 @@
 import gradio as gr
-from PIL import Image
-import random
-import logging
+from PIL import Image, ImageDraw
 import os
+import uuid
+import logging
 import joblib
 
-# === Setup Logging ===
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s",
-    handlers=[
-        logging.FileHandler("text_to_image.log"),
-        logging.StreamHandler()
-    ]
-)
+# ───── Configuration ───── #
+OUTPUT_DIR = "outputs"
+MODEL_PATH = "model_assets/model.pkl"  # Placeholder path
 
-# === Load Model ===
-def load_model(model_path="model.pkl"):
+# ───── Setup ───── #
+os.makedirs(OUTPUT_DIR, exist_ok=True)
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# ───── Dummy Placeholder Model ───── #
+# Replace this function with your actual model inference logic
+def generate_image_from_text(prompt, model=None):
+    logger.info("Running placeholder image generator...")
+
+    # Create a simple white image with text overlay
+    image = Image.new("RGB", (512, 512), color="white")
+    draw = ImageDraw.Draw(image)
+    draw.text((10, 250), prompt, fill="black")
+    return image
+
+# ───── Load Model ───── #
+def load_model():
     try:
-        if not os.path.exists(model_path):
-            raise FileNotFoundError(f"Model not found at: {model_path}")
-        model = joblib.load(model_path)
-        logging.info("✅ Model loaded successfully.")
+        # Simulate model loading
+        if os.path.exists(MODEL_PATH):
+            model = joblib.load(MODEL_PATH)
+            logger.info("Model loaded successfully.")
+        else:
+            logger.warning(f"Model file not found at: {MODEL_PATH}. Using None.")
+            model = None
         return model
     except Exception as e:
-        logging.error(f"❌ Failed to load model: {e}")
+        logger.error(f"Failed to load model: {e}")
         return None
-
-# Dummy placeholder function (replace with actual inference)
-def dummy_text_to_image(prompt):
-    logging.info(f"🔍 Received prompt: {prompt}")
-    img = Image.new("RGB", (256, 256), (
-        random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
-    )
-    logging.info("🖼️ Returning dummy image.")
-    return img
 
 model = load_model()
 
-# === Gradio Interface ===
+# ───── Prediction Wrapper ───── #
+def predict(prompt):
+    try:
+        logger.info(f"Received prompt: {prompt}")
+        image = generate_image_from_text(prompt, model=model)
+
+        if not isinstance(image, Image.Image):
+            raise ValueError("Generated output is not a valid image.")
+
+        # Save the image for download
+        image_id = str(uuid.uuid4())
+        output_path = os.path.join(OUTPUT_DIR, f"{image_id}.png")
+        image.save(output_path)
+        logger.info(f"Image saved to: {output_path}")
+
+        return image, output_path
+
+    except Exception as e:
+        logger.error(f"Prediction error: {e}")
+        return None, None
+
+# ───── Gradio UI ───── #
 with gr.Blocks(theme=gr.themes.Soft()) as demo:
-    gr.Markdown("## 🖼️ Text to Image Generator - Minimal (Light Mode)")
-    prompt = gr.Textbox(placeholder="Enter your prompt here", label="Prompt")
-    output = gr.Image(label="Generated Image", type="pil")
-    generate = gr.Button("Generate")
+    gr.Markdown("## 🖼️ Text-to-Image Generator (Minimal, Light Mode)")
+    with gr.Row():
+        prompt_input = gr.Textbox(label="Enter a text prompt", placeholder="e.g. A castle on a cloud at night")
+    with gr.Row():
+        generate_btn = gr.Button("Generate Image")
+    with gr.Row():
+        output_image = gr.Image(label="Generated Image")
+        download_button = gr.File(label="Download Image")
 
-    generate.click(fn=dummy_text_to_image, inputs=prompt, outputs=output)
+    def run(prompt):
+        return predict(prompt)
 
-demo.launch()
+    generate_btn.click(fn=run, inputs=prompt_input, outputs=[output_image, download_button])
+
+if __name__ == "__main__":
+    demo.launch()
