@@ -100,7 +100,7 @@ pip install -r requirements.txt
 
 ```bash
 # Step 4: Run the app
-python app.py
+python3 app.py
 ````
 
 Everything runs locally with Python 3.9+.
@@ -132,7 +132,7 @@ Got feedback, questions, or ideas for more templates?
 Reach out or follow me here:
 
 * 🔗 **LinkedIn**: [Charlham El](https://www.linkedin.com/in/charlham-el)
-* 💻 **GitHub**: [@yourhandle](https://github.com/Aetos973)
+* 💻 **GitHub**: [Aetos073](https://github.com/Aetos973)
 
 ---
 
