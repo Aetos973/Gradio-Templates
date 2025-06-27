@@ -7,7 +7,7 @@ import joblib
 
 # ───── Configuration ───── #
 OUTPUT_DIR = "outputs"
-MODEL_PATH = "model_assets/model.pkl"  # Placeholder
+MODEL_PATH = "model_assets/model.pkl"
 
 # ───── Setup ───── #
 os.makedirs(OUTPUT_DIR, exist_ok=True)
@@ -59,20 +59,30 @@ def predict(prompt):
         return None, None
 
 # ───── Gradio UI ───── #
-with gr.Blocks(theme=gr.themes.Soft(), css=".gradio-container { background-color: #ffffff; color: black; }") as demo:
-    gr.Markdown("## 🎨 Text-to-Image Generator (Modern Light Theme)")
-    with gr.Row():
-        prompt_input = gr.Textbox(label="Enter a prompt", placeholder="e.g. A hummingbird made of glass")
-    with gr.Row():
-        generate_btn = gr.Button("Generate Image")
-    with gr.Row():
-        output_image = gr.Image(label="Generated Image")
-        download_button = gr.File(label="Download Image")
+with gr.Blocks(theme=gr.themes.Soft()) as demo:
+    gr.Markdown("### 🎨 Generate Stunning Images from Text")
+    with gr.Tab("Text-to-Image"):
+        with gr.Column(variant="panel"):
+            prompt_input = gr.Textbox(
+                label="📝 Describe your scene",
+                placeholder="e.g. A hummingbird made of glass",
+                lines=2
+            )
+            with gr.Row():
+                generate_btn = gr.Button("🚀 Generate")
+                clear_btn = gr.Button("🔁 Clear")
+        with gr.Group():
+            output_image = gr.Image(label="🖼️ Your Generated Image", show_label=True)
+            download_button = gr.File(label="📥 Download")
 
     def run(prompt):
         return predict(prompt)
 
+    def clear_all():
+        return "", None, None
+
     generate_btn.click(fn=run, inputs=prompt_input, outputs=[output_image, download_button])
+    clear_btn.click(fn=clear_all, inputs=None, outputs=[prompt_input, output_image, download_button])
 
 if __name__ == "__main__":
     demo.launch()
