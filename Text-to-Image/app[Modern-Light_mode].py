@@ -7,7 +7,7 @@ import joblib
 
 # ───── Configuration ───── #
 OUTPUT_DIR = "outputs"
-MODEL_PATH = "model_assets/model.pkl"
+MODEL_PATH = "model_assets/model.pkl"  # Placeholder
 
 # ───── Setup ───── #
 os.makedirs(OUTPUT_DIR, exist_ok=True)
@@ -17,9 +17,9 @@ logger = logging.getLogger(__name__)
 # ───── Dummy Placeholder Model ───── #
 def generate_image_from_text(prompt, model=None):
     logger.info("Running placeholder image generator...")
-    image = Image.new("RGB", (512, 512), color="black")
+    image = Image.new("RGB", (512, 512), color="white")
     draw = ImageDraw.Draw(image)
-    draw.text((10, 250), prompt, fill="white")
+    draw.text((10, 250), prompt, fill="black")
     return image
 
 # ───── Load Model ───── #
@@ -59,10 +59,10 @@ def predict(prompt):
         return None, None
 
 # ───── Gradio UI ───── #
-with gr.Blocks(theme=gr.themes.Base(), css=".gradio-container { background-color: #1c1c1c; color: white; }") as demo:
-    gr.Markdown("## 🌌 Text-to-Image Generator (Modern Dark Theme)")
+with gr.Blocks(theme=gr.themes.Soft(), css=".gradio-container { background-color: #ffffff; color: black; }") as demo:
+    gr.Markdown("## 🎨 Text-to-Image Generator (Modern Light Theme)")
     with gr.Row():
-        prompt_input = gr.Textbox(label="Enter a prompt", placeholder="e.g. A nebula shaped like a lion")
+        prompt_input = gr.Textbox(label="Enter a prompt", placeholder="e.g. A hummingbird made of glass")
     with gr.Row():
         generate_btn = gr.Button("Generate Image")
     with gr.Row():
