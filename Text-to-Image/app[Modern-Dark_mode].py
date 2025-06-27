@@ -7,7 +7,7 @@ import joblib
 
 # ───── Configuration ───── #
 OUTPUT_DIR = "outputs"
-MODEL_PATH = "model_assets/model.pkl"  # Placeholder
+MODEL_PATH = "model_assets/model.pkl"
 
 # ───── Setup ───── #
 os.makedirs(OUTPUT_DIR, exist_ok=True)
@@ -17,9 +17,9 @@ logger = logging.getLogger(__name__)
 # ───── Dummy Placeholder Model ───── #
 def generate_image_from_text(prompt, model=None):
     logger.info("Running placeholder image generator...")
-    image = Image.new("RGB", (512, 512), color="white")
+    image = Image.new("RGB", (512, 512), color="black")
     draw = ImageDraw.Draw(image)
-    draw.text((10, 250), prompt, fill="black")
+    draw.text((10, 250), prompt, fill="white")
     return image
 
 # ───── Load Model ───── #
@@ -59,20 +59,30 @@ def predict(prompt):
         return None, None
 
 # ───── Gradio UI ───── #
-with gr.Blocks(theme=gr.themes.Soft(), css=".gradio-container { background-color: #ffffff; color: black; }") as demo:
-    gr.Markdown("## 🎨 Text-to-Image Generator (Modern Light Theme)")
-    with gr.Row():
-        prompt_input = gr.Textbox(label="Enter a prompt", placeholder="e.g. A hummingbird made of glass")
-    with gr.Row():
-        generate_btn = gr.Button("Generate Image")
-    with gr.Row():
-        output_image = gr.Image(label="Generated Image")
-        download_button = gr.File(label="Download Image")
+with gr.Blocks(theme=gr.themes.Base(), css=".gradio-container { background-color: #121212; color: white; }") as demo:
+    gr.Markdown("### 🌌 Generate Images from Imagination (Dark Mode)")
+    with gr.Tab("Text-to-Image"):
+        with gr.Column(variant="panel"):
+            prompt_input = gr.Textbox(
+                label="📝 Your Prompt",
+                placeholder="e.g. A galaxy in the shape of a tiger",
+                lines=2
+            )
+            with gr.Row():
+                generate_btn = gr.Button("Generate")
+                clear_btn = gr.Button("Reset")
+        with gr.Group():
+            output_image = gr.Image(label="🖼️ Result", show_label=True)
+            download_button = gr.File(label="Download")
 
     def run(prompt):
         return predict(prompt)
 
+    def clear_all():
+        return "", None, None
+
     generate_btn.click(fn=run, inputs=prompt_input, outputs=[output_image, download_button])
+    clear_btn.click(fn=clear_all, inputs=None, outputs=[prompt_input, output_image, download_button])
 
 if __name__ == "__main__":
     demo.launch()
