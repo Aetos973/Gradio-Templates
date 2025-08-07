@@ -1,56 +1,69 @@
 import gradio as gr
-from config.settings import THEMES, MODEL_OPTIONS, DEFAULT_THEME, DEFAULT_MODEL
-from model.loader import load_model
-from model.inference import predict
-from utils.logger import setup_logger
-from utils.tracker import get_status_message
+import logging
+from model.loader import get_mistral_client
+from model.inference import build_prompt_instruction
+from config.ui_config import UI_CONFIG
+from config.settings import MODEL_OPTIONS
 
-logger = setup_logger()
+logger = logging.getLogger("gradio-template")
 
-# ───── Load default model ───── #
-active_model = load_model(DEFAULT_MODEL)
+# ───── Function: Process Prompt and Generate ───── #
+def generate_image(user_prompt, mood, prompt_type, art_style, image_type, frame, model_choice):
+    # Step 1: Create metadata
+    metadata = {
+        "mood": mood,
+        "type": prompt_type,
+        "art_style": art_style,
+        "image_type": image_type,
+        "frame": frame
+    }
 
-# ───── Load selected CSS ───── #
-def load_css(theme_name):
-    with open(THEMES[theme_name], "r") as f:
-        return f.read()
+    # Step 2: Build instruction prompt
+    instruction = build_prompt_instruction(user_prompt, metadata)
 
-# ───── Gradio App ───── #
-with gr.Blocks(css=load_css(DEFAULT_THEME)) as demo:
-    gr.Markdown("## 🖼️ Text-to-Image Generator")
+    # Step 3: Get Mistral client and generate optimized prompt
+    mistral = get_mistral_client()
+    if mistral is None:
+        return "Error loading Mistral."
+
+    try:
+        result = mistral(instruction, max_new_tokens=150, do_sample=True, temperature=0.7)
+        optimized_prompt = result[0]['generated_text'].split("Optimized Prompt:")[-1].strip()
+    except Exception as e:
+        logger.error(f"Prompt transformation failed: {e}")
+        optimized_prompt = user_prompt  # fallback
+
+    # TODO: Use optimized_prompt with selected image model (not implemented yet)
+    return f"🔁 Optimized Prompt:\n{optimized_prompt}"
+
+
+# ───── Gradio UI Elements ───── #
+with gr.Blocks(title="Gradio Image Prompt Optimizer") as demo:
+    gr.Markdown("## 🧠 AI-Powered Prompt Enhancer")
 
     with gr.Row():
-        theme_dropdown = gr.Dropdown(label="Choose Theme", choices=list(THEMES.keys()), value=DEFAULT_THEME)
-        model_dropdown = gr.Dropdown(label="Choose Model", choices=list(MODEL_OPTIONS.keys()), value=DEFAULT_MODEL)
-
-    prompt_input = gr.Textbox(label="Prompt", placeholder="e.g. A neon samurai in the rain")
-    generate_btn = gr.Button("Generate")
-    clear_btn = gr.Button("Clear")
+        user_prompt = gr.Textbox(label="Describe Your Image", placeholder="e.g. A dragon flying over a neon city at night")
 
     with gr.Row():
-        output_image = gr.Image(label="Generated Image")
-        download_file = gr.File(label="Download")
+        mood = gr.Dropdown(choices=UI_CONFIG["mood"], label="Mood", value=UI_CONFIG["mood"][0])
+        prompt_type = gr.Dropdown(choices=UI_CONFIG["type"], label="Prompt Type", value=UI_CONFIG["type"][0])
+        art_style = gr.Dropdown(choices=UI_CONFIG["art_style"], label="Art Style", value=UI_CONFIG["art_style"][0])
     
-    status_tracker = gr.Markdown("")  # UX status updates
+    with gr.Row():
+        image_type = gr.Dropdown(choices=UI_CONFIG["image_type"], label="Image Type", value=UI_CONFIG["image_type"][0])
+        frame = gr.Dropdown(choices=UI_CONFIG["frame"], label="Frame", value=UI_CONFIG["frame"][0])
+        model_choice = gr.Dropdown(choices=list(MODEL_OPTIONS.keys()), label="Model", value=list(MODEL_OPTIONS.keys())[0])
 
-    # ───── Function Hooks ───── #
-    def run(prompt, model_name):
-        global active_model
-        status = get_status_message(prompt, model_name)
-        active_model = load_model(model_name)
-        image, path = predict(prompt, active_model)
-        return image, path, status
+    generate_btn = gr.Button("⚡ Generate Optimized Prompt")
 
-    def clear():
-        return "", None, None, ""
+    output_text = gr.Textbox(label="Optimized Prompt", lines=6)
 
-    def switch_theme(theme_name):
-        return gr.update(css=load_css(theme_name))
+    generate_btn.click(
+        fn=generate_image,
+        inputs=[user_prompt, mood, prompt_type, art_style, image_type, frame, model_choice],
+        outputs=[output_text]
+    )
 
-    # ───── Bind Events ───── #
-    generate_btn.click(run, inputs=[prompt_input, model_dropdown], outputs=[output_image, download_file, status_tracker])
-    clear_btn.click(clear, outputs=[prompt_input, output_image, download_file, status_tracker])
-    theme_dropdown.change(fn=switch_theme, inputs=theme_dropdown, outputs=[])
-
+# ───── Launch App ───── #
 if __name__ == "__main__":
     demo.launch()
