@@ -1,0 +1,36 @@
+/* templates/pastel_dark.css */
+
+body {
+  background-color: #2E2B3F;
+  color: #EEE6FF;
+  font-family: "Inter", sans-serif;
+}
+
+.gradio-container {
+  background-color: #3A3650;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+input, textarea, select {
+  background-color: #4A4561;
+  border: 1px solid #615C7B;
+  border-radius: 10px;
+  color: #EEE6FF;
+}
+
+button {
+  background-color: #FFB3C1;
+  color: #2E2B3F;
+  border-radius: 10px;
+  padding: 10px 18px;
+  font-weight: bold;
+}
+
+button:hover {
+  background-color: #FFA3B0;
+}
+
+h1, h2, h3 {
+  color: #FFD6EC;
+}
