@@ -1,0 +1,19 @@
+# ─── Core ────────────────────────────────────────────────────────────
+gradio>=4.24.0
+transformers>=4.43.0
+torch>=2.2.0
+joblib>=1.3.2
+
+# ─── Performance & Caching ───────────────────────────────────────────
+fastapi>=0.111.0
+uvicorn>=0.30.0
+cachetools>=5.3.3
+
+# ─── Logging & Debugging ─────────────────────────────────────────────
+loguru>=0.7.2
+
+# ─── Optional (Image-related Enhancements) ───────────────────────────
+pillow>=10.3.0
+
+# ─── Version Management ──────────────────────────────────────────────
+python-dotenv>=1.0.1
