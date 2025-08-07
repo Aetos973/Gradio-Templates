@@ -1,6 +1,6 @@
 import os
 
-# ───── Theme Config ───── #
+# ───── Dynamic Theme Loader ───── #
 TEMPLATES_DIR = "templates"
 THEMES = {
     os.path.splitext(f)[0].replace("_", " ").title(): os.path.join(TEMPLATES_DIR, f)
