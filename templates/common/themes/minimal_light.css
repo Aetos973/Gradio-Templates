@@ -1,0 +1,54 @@
+:root {
+  --bg-color: #f9f9f9;
+  --text-color: #1a1a1a;
+  --primary-color: #555555;
+  --secondary-color: #999999;
+  --accent-color: #000000;
+  --border-color: #dddddd;
+  --input-bg: #ffffff;
+  --input-text: #1a1a1a;
+  --button-bg: #eeeeee;
+  --button-text: #1a1a1a;
+  --button-hover: #e2e2e2;
+  --card-bg: #ffffff;
+  --link-color: #222222;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-family: 'Inter', sans-serif;
+}
+
+a {
+  color: var(--link-color);
+  text-decoration: none;
+}
+
+button {
+  background-color: var(--button-bg);
+  color: var(--button-text);
+  border: 1px solid var(--border-color);
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: var(--button-hover);
+}
+
+input, textarea, select {
+  background-color: var(--input-bg);
+  color: var(--input-text);
+  border: 1px solid var(--border-color);
+  padding: 0.5rem;
+  border-radius: 4px;
+}
+
+.card {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  padding: 1rem;
+  border-radius: 8px;
+}

@@ -1,0 +1,58 @@
+:root {
+  --bg-color: #f7f7f7;
+  --text-color: #1a1a1a;
+  --primary-color: #ff00cc;
+  --secondary-color: #00cfff;
+  --accent-color: #ff9900;
+  --border-color: #ccc;
+  --input-bg: #ffffff;
+  --input-text: #000000;
+  --button-bg: var(--primary-color);
+  --button-text: #ffffff;
+  --button-hover: #e600aa;
+  --card-bg: #ffffff;
+  --link-color: var(--secondary-color);
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-family: 'Orbitron', sans-serif;
+}
+
+a {
+  color: var(--link-color);
+  text-decoration: underline;
+}
+
+button {
+  background-color: var(--button-bg);
+  color: var(--button-text);
+  border: 1px solid var(--accent-color);
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: var(--button-hover);
+  transform: scale(1.05);
+}
+
+input, textarea, select {
+  background-color: var(--input-bg);
+  color: var(--input-text);
+  border: 1px solid var(--secondary-color);
+  padding: 0.5rem;
+  border-radius: 4px;
+}
+
+.card {
+  background-color: var(--card-bg);
+  border: 1px solid var(--accent-color);
+  border-radius: 6px;
+  padding: 1rem;
+  box-shadow: 0 0 10px var(--primary-color);
+  margin-bottom: 1rem;
+}
